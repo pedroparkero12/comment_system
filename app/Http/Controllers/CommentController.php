@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\AddCommentRequest;
 use Validator;
 
 //models
@@ -19,7 +20,7 @@ class CommentController extends Controller
         ->get();
         else return Comment::where('parent_id','!=',null)->orderBy('created_at','ASC')->get()->groupBy('parent_id');
     }
-    public function store(Request $request)
+    public function store(AddCommentRequest $request)
     {
         $input = $request->all();
         return Comment::create($input);
