@@ -47392,7 +47392,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
-        return {};
+        return {
+            root_comments: [],
+            comments: [],
+            parent_id: null,
+            name: '',
+            content: '',
+            errors: []
+        };
     },
     ready: function ready() {
         this.prepareComponent();
@@ -47402,9 +47409,55 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
-        prepareComponent: function prepareComponent() {},
-        showCommentModal: function showCommentModal() {
+        prepareComponent: function prepareComponent() {
+            this.getComments();
+        },
+        getComments: function getComments() {
+            var _this = this;
+
+            axios.get('/comments' + '?no_parent=""').then(function (response) {
+                _this.root_comments = response.data;
+            });
+            axios.get('/comments').then(function (response) {
+                _this.comments = response.data;
+            });
+        },
+        clearFields: function clearFields() {
+            this.name = '';
+            this.content = '';
+        },
+        showCommentModal: function showCommentModal(parent_id) {
+            if (parent_id == undefined) this.parent_id = null;else this.parent_id = parent_id;
             $('#write_comment').modal('show');
+        },
+        checkForm: function checkForm() {
+            if (this.name && this.content) {
+                return true;
+            }
+
+            this.errors = [];
+
+            if (!this.name) {
+                this.errors.push('Name is required.');
+            }
+            if (!this.content) {
+                this.errors.push('Comment is required.');
+            }
+        },
+        addComment: function addComment() {
+            var _this2 = this;
+
+            if (this.checkForm()) {
+                var data = { 'post_id': 1, 'name': this.name, 'content': this.content, 'parent_id': this.parent_id };
+
+                axios.post('/comments', data).then(function (response) {
+                    $('#write_comment').modal('hide');
+                    _this2.clearFields();
+                    _this2.getComments();
+                });
+            } else {
+                alert(this.errors);
+            }
         }
     }
 });
@@ -47421,108 +47474,205 @@ var render = function() {
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-12" }, [
         _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c("h5", { staticClass: "card-title" }, [_vm._v("Card title")]),
-            _vm._v(" "),
-            _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-              _vm._v("Card subtitle")
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "card-text" }, [
-              _vm._v(
-                "Some quick example text to build on the card title and make up the bulk of the card's content."
-              )
-            ]),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "card-link",
-                attrs: { href: "#" },
-                on: { click: _vm.showCommentModal }
-              },
-              [_vm._v("Write a comment")]
-            ),
-            _vm._v(" "),
-            _c("hr"),
-            _vm._v(" "),
-            _vm._m(0)
-          ])
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c("h5", { staticClass: "card-title" }, [
+                _vm._v("Juan Dela Cruz")
+              ]),
+              _vm._v(" "),
+              _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+                _vm._v("07/08/08 12:00:00 AM")
+              ]),
+              _vm._v(" "),
+              _c("p", { staticClass: "card-text" }, [
+                _vm._v(
+                  "Some quick example text to build on the card title and make up the bulk of the card's content."
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "card-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      _vm.showCommentModal()
+                    }
+                  }
+                },
+                [_vm._v("Write a comment")]
+              ),
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _vm._l(_vm.root_comments, function(comment) {
+                return _c(
+                  "div",
+                  { staticClass: "card-body" },
+                  [
+                    _c("h5", { staticClass: "card-title" }, [
+                      _vm._v(_vm._s(comment.name))
+                    ]),
+                    _vm._v(" "),
+                    _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+                      _vm._v(_vm._s(comment.created_at))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "card-text" }, [
+                      _vm._v(_vm._s(comment.content))
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass: "card-link",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            _vm.showCommentModal(comment.id)
+                          }
+                        }
+                      },
+                      [_vm._v("Reply")]
+                    ),
+                    _vm._v(" "),
+                    _vm._l(_vm.comments, function(value, key) {
+                      return _c(
+                        "div",
+                        _vm._l(value, function(child_comment1) {
+                          return key == comment.id
+                            ? _c(
+                                "div",
+                                { staticClass: "card-body" },
+                                [
+                                  _c("hr"),
+                                  _vm._v(" "),
+                                  _c("h5", { staticClass: "card-title" }, [
+                                    _vm._v(_vm._s(child_comment1.name))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "h6",
+                                    {
+                                      staticClass:
+                                        "card-subtitle mb-2 text-muted"
+                                    },
+                                    [_vm._v(_vm._s(child_comment1.created_at))]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("p", { staticClass: "card-text" }, [
+                                    _vm._v(_vm._s(child_comment1.content))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "a",
+                                    {
+                                      staticClass: "card-link",
+                                      attrs: { href: "#" },
+                                      on: {
+                                        click: function($event) {
+                                          _vm.showCommentModal(
+                                            child_comment1.id
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Reply")]
+                                  ),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.comments, function(value, key) {
+                                    return _c(
+                                      "div",
+                                      _vm._l(value, function(child_comment2) {
+                                        return key == child_comment1.id
+                                          ? _c(
+                                              "div",
+                                              { staticClass: "card-body" },
+                                              [
+                                                _c("hr"),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "h5",
+                                                  { staticClass: "card-title" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        child_comment2.name
+                                                      )
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "h6",
+                                                  {
+                                                    staticClass:
+                                                      "card-subtitle mb-2 text-muted"
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        child_comment2.created_at
+                                                      )
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "p",
+                                                  { staticClass: "card-text" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        child_comment2.content
+                                                      )
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "a",
+                                                  {
+                                                    staticClass: "card-link",
+                                                    attrs: { href: "#" },
+                                                    on: {
+                                                      click: function($event) {
+                                                        _vm.showCommentModal(
+                                                          child_comment1.id
+                                                        )
+                                                      }
+                                                    }
+                                                  },
+                                                  [_vm._v("Reply")]
+                                                )
+                                              ]
+                                            )
+                                          : _vm._e()
+                                      })
+                                    )
+                                  })
+                                ],
+                                2
+                              )
+                            : _vm._e()
+                        })
+                      )
+                    })
+                  ],
+                  2
+                )
+              })
+            ],
+            2
+          )
         ])
       ])
     ]),
     _vm._v(" "),
-    _vm._m(1)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body" }, [
-      _c("h5", { staticClass: "card-title" }, [_vm._v("Card title")]),
-      _vm._v(" "),
-      _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-        _vm._v("Card subtitle")
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "card-text" }, [
-        _vm._v(
-          "Some quick example text to build on the card title and make up the bulk of the card's content."
-        )
-      ]),
-      _vm._v(" "),
-      _c("a", { staticClass: "card-link", attrs: { href: "#" } }, [
-        _vm._v("Reply")
-      ]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-body" }, [
-        _c("h5", { staticClass: "card-title" }, [_vm._v("Card title")]),
-        _vm._v(" "),
-        _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-          _vm._v("Card subtitle")
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "card-text" }, [
-          _vm._v(
-            "Some quick example text to build on the card title and make up the bulk of the card's content."
-          )
-        ]),
-        _vm._v(" "),
-        _c("a", { staticClass: "card-link", attrs: { href: "#" } }, [
-          _vm._v("Reply")
-        ]),
-        _vm._v(" "),
-        _c("hr"),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c("h5", { staticClass: "card-title" }, [_vm._v("Card title")]),
-          _vm._v(" "),
-          _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-            _vm._v("Card subtitle")
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "card-text" }, [
-            _vm._v(
-              "Some quick example text to build on the card title and make up the bulk of the card's content."
-            )
-          ]),
-          _vm._v(" "),
-          _c("a", { staticClass: "card-link", attrs: { href: "#" } }, [
-            _vm._v("Reply")
-          ])
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
+    _c(
       "div",
       {
         staticClass: "modal fade",
@@ -47531,34 +47681,32 @@ var staticRenderFns = [
       [
         _c("div", { staticClass: "modal-dialog modal-sm" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c("h4", { staticClass: "modal-title" }, [
-                _vm._v(
-                  "\n                        Write a comment\n                    "
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "close",
-                  attrs: {
-                    type: "button",
-                    "data-dismiss": "modal",
-                    "aria-hidden": "true"
-                  }
-                },
-                [_vm._v("×")]
-              )
-            ]),
+            _vm._m(0),
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _c("div", { staticClass: "form-group" }, [
                 _c("label", [_vm._v("Name")]),
                 _vm._v(" "),
                 _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.name,
+                      expression: "name"
+                    }
+                  ],
                   staticClass: "form-control",
-                  attrs: { type: "text" }
+                  attrs: { type: "text", id: "name" },
+                  domProps: { value: _vm.name },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.name = $event.target.value
+                    }
+                  }
                 })
               ]),
               _vm._v(" "),
@@ -47566,8 +47714,25 @@ var staticRenderFns = [
                 _c("label", [_vm._v("Comment")]),
                 _vm._v(" "),
                 _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.content,
+                      expression: "content"
+                    }
+                  ],
                   staticClass: "form-control",
-                  attrs: { type: "text" }
+                  attrs: { type: "text", id: "content" },
+                  domProps: { value: _vm.content },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.content = $event.target.value
+                    }
+                  }
                 })
               ])
             ]),
@@ -47584,18 +47749,45 @@ var staticRenderFns = [
               _vm._v(" "),
               _c(
                 "button",
-                { staticClass: "btn btn-primary", attrs: { type: "button" } },
-                [
-                  _vm._v(
-                    "\n                        REPLY\n                    "
-                  )
-                ]
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { type: "submit" },
+                  on: { click: _vm.addComment }
+                },
+                [_vm._v("Reply")]
               )
             ])
           ])
         ])
       ]
     )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h4", { staticClass: "modal-title" }, [
+        _vm._v(
+          "\n                        Write a comment\n                    "
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-hidden": "true"
+          }
+        },
+        [_vm._v("×")]
+      )
+    ])
   }
 ]
 render._withStripped = true
