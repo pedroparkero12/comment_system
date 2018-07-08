@@ -47488,7 +47488,7 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "card-text" }, [
                 _vm._v(
-                  "Some quick example text to build on the card title and make up the bulk of the card's content."
+                  'This is a simple web comment system. Click "write a comment to comment". You can also reply to other comments.'
                 )
               ]),
               _vm._v(" "),

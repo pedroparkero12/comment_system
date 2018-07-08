@@ -6,7 +6,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Juan Dela Cruz</h5>
                         <h6 class="card-subtitle mb-2 text-muted">07/08/08 12:00:00 AM</h6>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <p class="card-text">This is a simple web comment system. Click "write a comment to comment". You can also reply to other comments.</p>
                         <a href="#" class="card-link" @click="showCommentModal()">Write a comment</a>
                         <hr>
                         <div class="card-body"  v-for="comment in root_comments">
